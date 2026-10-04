@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050505" />
+  <meta name="description" content="Free WhatsApp Ban Checker — check any number for free, forever." />
+  <link rel="icon" type="image/jpg" href="../images/image.jpg" />
+  <meta property="og:title" content="Free Ban Check — The Satanic Mirror">
+  <meta property="og:description" content="Check any WhatsApp number for free, forever.">
+  <meta property="og:image" content="https://baron0.com/images/image.jpg">
+  <title>Free Ban Check — The Satanic Mirror</title>
+  <style>
+  /* Design tokens mirrored from the panel (panel/frontend/src/index.css). */
+  :root {
+    --background: 0 0% 1.5%;
+    --foreground: 45 13% 91%;
+    --card: 0 0% 3.3%;
+    --secondary: 0 0% 7%;
+    --muted-foreground: 40 4% 50%;
+    --destructive: 0 43% 48%;
+    --success: 103 18% 59%;
+    --border: 45 6% 16%;
+    --input: 45 6% 19%;
+    --ring: 45 13% 82%;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; border-color: hsl(var(--border)); }
+
+  html {
+    color-scheme: dark;
+    min-width: 320px;
+    background: hsl(var(--background));
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: hsl(var(--foreground));
+    font-family: Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(ellipse 80% 50% at 52% -18%, rgba(255,255,255,0.06), transparent 64%),
+      radial-gradient(ellipse 45% 36% at 100% 38%, rgba(255,255,255,0.022), transparent 72%),
+      linear-gradient(180deg, #050505 0%, #020202 53%, #050505 100%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  /* Faint architectural grid. */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none; opacity: .34;
+    background:
+      repeating-linear-gradient(90deg, transparent 0, transparent calc(12.5vw - 1px), rgba(255,255,255,0.022) calc(12.5vw - 1px), rgba(255,255,255,0.022) 12.5vw),
+      repeating-linear-gradient(0deg, transparent 0, transparent 120px, rgba(255,255,255,0.011) 120px, rgba(255,255,255,0.011) 121px);
+  }
+
+  /* Print grain over everything. */
+  body::after {
+    content: ""; position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: .048;
+    mix-blend-mode: soft-light;
+    background: repeating-radial-gradient(circle at 19% 31%,
+      rgba(255,255,255,0.92) 0, rgba(255,255,255,0.92) .4px, transparent .7px, transparent 4px);
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    letter-spacing: -.035em;
+  }
+
+  ::selection { color: #050505; background: #e9e7df; }
+
+  /* ---------- Chrome ---------- */
+
+  .topbar {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    min-height: 4.1rem; padding: 0 clamp(1rem, 4vw, 2.5rem);
+    border-bottom: 1px solid hsl(var(--border));
+    background: rgba(3,3,3,0.94); backdrop-filter: blur(18px);
+  }
+  .brand { display: flex; align-items: center; gap: .78rem; color: inherit; text-decoration: none; }
+
+  /* TSM emblem — same raster the panel embeds via TsmInlineIcon. */
+  .mark {
+    display: block; flex: 0 0 auto; width: 2.6rem; height: 2.6rem;
+    overflow: visible; background: transparent;
+    object-fit: contain; object-position: center; transform-origin: center;
+    user-select: none; -webkit-user-drag: none;
+    filter: drop-shadow(0 0 12px rgba(255,255,255,.045));
+  }
+  .mark-lg {
+    width: 9rem; height: 9rem; margin-bottom: 1.6rem;
+    filter: drop-shadow(0 0 32px rgba(255,255,255,.07));
+    animation: tsm-emblem-float 7s ease-in-out infinite;
+  }
+  @keyframes tsm-emblem-float {
+    0%, 100% { transform: translateY(0) scale(1); opacity: .94; }
+    50% { transform: translateY(-2px) scale(1.012); opacity: 1; }
+  }
+
+  .brand-name {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: .88rem; font-style: italic; text-transform: uppercase; letter-spacing: -.015em;
+  }
+  .brand-sub {
+    margin-top: .18rem;
+    font-family: "Courier New", Courier, monospace;
+    font-size: .5rem; font-weight: 700; letter-spacing: .28em; text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .link {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .55rem .8rem; border: 1px solid transparent;
+    color: hsl(var(--muted-foreground)); text-decoration: none;
+    font-family: "Courier New", Courier, monospace;
+    font-size: .58rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+    transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease;
+  }
+  .link:hover {
+    color: hsl(var(--foreground));
+    border-color: rgba(255,255,255,.07);
+    background: rgba(255,255,255,.025);
+  }
+
+  /* ---------- Layout ---------- */
+
+  .page { position: relative; max-width: 34rem; margin: 0 auto; padding: 3rem 1rem 5rem; }
+  /* Large orbit ring behind the content, as on the panel auth screens. */
+  .page::before {
+    content: ""; position: fixed; top: 50%; left: 50%; z-index: -1;
+    width: min(92vw, 920px); aspect-ratio: 1;
+    border: 1px solid rgba(255,255,255,.052); border-radius: 50%;
+    transform: translate(-50%, -50%); pointer-events: none;
+    box-shadow: 0 0 0 74px rgba(255,255,255,.009), 0 0 0 148px rgba(255,255,255,.005);
+  }
+
+  .hero { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 2.25rem; }
+  .hero h1 {
+    max-width: 22rem;
+    font-size: clamp(2.35rem, 7vw, 3.6rem); font-style: italic; line-height: .92;
+    letter-spacing: -.065em; text-transform: uppercase;
+  }
+  .hero p {
+    max-width: 24rem; margin-top: .85rem;
+    font-family: Georgia, "Times New Roman", serif; font-size: .9rem; line-height: 1.65;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: .5rem; margin-bottom: 1.1rem;
+    padding: .3rem .6rem; border: 1px solid hsl(var(--border));
+    font-family: "Courier New", Courier, monospace;
+    font-size: .52rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* ---------- Card ---------- */
+
+  .card {
+    position: relative; margin-bottom: 1rem; padding: 1.6rem;
+    border: 1px solid hsl(var(--border));
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.016), transparent 38%),
+      hsl(var(--card) / .91);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.014), 0 24px 80px rgba(0,0,0,.15);
+    transition: border-color 220ms ease;
+  }
+  .card:hover { border-color: hsl(var(--foreground) / .2); }
+  /* Corner brackets. */
+  .card::before, .card::after { content: ""; position: absolute; z-index: 3; width: 16px; height: 16px; pointer-events: none; }
+  .card::before { top: -1px; left: -1px; border-top: 1px solid hsl(var(--foreground) / .48); border-left: 1px solid hsl(var(--foreground) / .48); }
+  .card::after { right: -1px; bottom: -1px; border-right: 1px solid hsl(var(--foreground) / .25); border-bottom: 1px solid hsl(var(--foreground) / .25); }
+
+  .card-title {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 1.35rem;
+    font-family: "Courier New", Courier, monospace;
+    font-size: .53rem; font-weight: 700; letter-spacing: .3em; text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+  .card-title::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, hsl(var(--muted-foreground)), transparent); }
+
+  /* ---------- Form ---------- */
+
+  .label {
+    display: block; margin-bottom: .55rem;
+    font-family: "Courier New", Courier, monospace;
+    font-size: .58rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+    color: hsl(var(--foreground) / .9);
+  }
+
+  .phone-input {
+    display: block; width: 100%; min-height: 2.55rem; padding: .5rem .75rem;
+    border: 1px solid hsl(var(--input)); border-radius: 0;
+    background: hsl(var(--secondary) / .34);
+    color: hsl(var(--foreground)); font-family: inherit; font-size: .875rem;
+    box-shadow: inset 0 -1px 0 rgba(255,255,255,.023);
+    transition: border-color 180ms ease;
+  }
+  .phone-input::placeholder { color: hsl(var(--muted-foreground)); }
+  .phone-input:focus {
+    border-color: hsl(var(--foreground) / .54);
+    outline: none;
+    box-shadow: 0 0 0 1px hsl(var(--ring) / .5);
+  }
+
+  .turnstile-wrap { display: flex; justify-content: center; margin: 1rem 0; }
+
+  .btn {
+    position: relative; overflow: hidden;
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    width: 100%; min-height: 2.55rem; padding: .5rem 1rem;
+    border: 1px solid hsl(var(--foreground)); border-radius: 0;
+    background: hsl(var(--foreground)); color: #050505;
+    font-family: "Courier New", Courier, monospace;
+    font-size: .62rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+    cursor: pointer; transition: background-color 200ms ease, color 200ms ease, opacity 200ms ease;
+  }
+  /* Light sweep on hover, same as the panel's buttons. */
+  .btn::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(0,0,0,.12), transparent);
+    transform: translateX(-120%); transition: transform 420ms ease;
+  }
+  .btn:hover:not(:disabled) { background: transparent; color: hsl(var(--foreground)); }
+  .btn:hover:not(:disabled)::after { transform: translateX(120%); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btn-mt { margin-top: 1.2rem; }
+
+  .spin {
+    display: inline-block; width: 14px; height: 14px;
+    border: 1px solid currentColor; border-top-color: transparent; border-radius: 50%;
+    animation: rot .7s linear infinite;
+  }
+  @keyframes rot { to { transform: rotate(360deg); } }
+
+  /* ---------- Result ---------- */
+
+  .status-banner {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem; margin-bottom: 1.15rem;
+    border: 1px solid hsl(var(--border)); background: rgba(255,255,255,.014);
+  }
+  .status-banner.banned { border-color: hsl(var(--destructive) / .38); background: hsl(var(--destructive) / .07); }
+  .status-banner.active { border-color: hsl(var(--success) / .32); background: hsl(var(--success) / .06); }
+
+  .s-icon { flex: 0 0 auto; display: flex; }
+  .s-icon svg { width: 1.5rem; height: 1.5rem; }
+  .s-icon.banned { color: hsl(var(--destructive)); }
+  .s-icon.active { color: hsl(var(--success)); }
+
+  .s-title { font-family: "Courier New", Courier, monospace; font-size: .82rem; font-weight: 700; letter-spacing: .08em; }
+  .s-sub { margin-top: .25rem; font-family: Georgia, "Times New Roman", serif; font-size: .78rem; color: hsl(var(--muted-foreground)); }
+
+  .rows { display: flex; flex-direction: column; }
+  .row {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: .7rem 0; border-bottom: 1px solid hsl(var(--border) / .72);
+  }
+  .row:first-child { border-top: 1px solid hsl(var(--border) / .72); }
+  .row-k {
+    font-family: "Courier New", Courier, monospace;
+    font-size: .56rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+  .row-v { max-width: 62%; text-align: right; font-size: .82rem; }
+  .row-v.banned { color: hsl(var(--destructive)); }
+  .row-v.active { color: hsl(var(--success)); }
+
+  .hint {
+    margin-top: 1.15rem; text-align: center;
+    font-family: Georgia, "Times New Roman", serif; font-size: .78rem; line-height: 1.6;
+    color: hsl(var(--muted-foreground));
+  }
+  .error {
+    margin-top: .8rem; padding: .55rem .7rem;
+    border: 1px solid hsl(var(--destructive) / .35); background: hsl(var(--destructive) / .08);
+    color: hsl(var(--destructive));
+    font-family: "Courier New", Courier, monospace; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase;
+    text-align: center;
+  }
+  .hidden { display: none !important; }
+
+  footer {
+    position: relative; padding: 1.75rem 1rem; text-align: center;
+    border-top: 1px solid hsl(var(--border));
+    font-family: "Courier New", Courier, monospace;
+    font-size: .53rem; font-weight: 700; letter-spacing: .28em; text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+  footer a { color: inherit; text-decoration: none; }
+  footer a:hover { color: hsl(var(--foreground)); }
+  footer .sep { opacity: .4; margin: 0 .55rem; }
+
+  @media (max-width: 767px) {
+    body::before {
+      background: repeating-linear-gradient(90deg, transparent 0, transparent calc(25vw - 1px), rgba(255,255,255,0.02) calc(25vw - 1px), rgba(255,255,255,0.02) 25vw);
+    }
+    .page { padding: 2rem 1rem 4rem; }
+    .card { padding: 1.35rem; }
+    .page::before { width: 115vw; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .01ms !important; animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+  }
+  </style>
+  <meta name="page-token" content="07f103761d8b28de4cf503687d3651fc43f21f8b8a2a2c2a6bc34bf76db03eaa">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/">
+    <img class="mark" src="/images/tsm-emblem.png" alt="" aria-hidden="true" draggable="false" decoding="async" />
+    <span>
+      <span class="brand-name">The Satanic Mirror</span>
+      <span class="brand-sub" style="display:block;">Free Check</span>
+    </span>
+  </a>
+  <a class="link" href="/panel">Panel</a>
+</header>
+
+<div class="page">
+
+  <div class="hero">
+    <img class="mark mark-lg" src="/images/tsm-emblem.png" alt="" aria-hidden="true" draggable="false" loading="eager" decoding="async" />
+    <span class="eyebrow">Free forever</span>
+    <h1>Free Ban Check</h1>
+    <p>Check any WhatsApp number in seconds. Status, the time it was checked, and the ban reason — nothing else.</p>
+  </div>
+
+  <div class="card" id="step-input">
+    <div class="card-title">Check number</div>
+    <label class="label" for="phone-input">Phone number</label>
+    <input type="tel" id="phone-input" class="phone-input" placeholder="+49123456789 or 0151..." />
+    <div class="turnstile-wrap" id="ts-wrap">
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAADnq7lsJ0xLVIRQ9" data-theme="dark"></div>
+    </div>
+    <button id="check-btn" class="btn btn-mt">Check ban status</button>
+    <div id="check-error" class="error hidden"></div>
+  </div>
+
+  <div class="card hidden" id="step-result">
+    <div class="card-title">Result</div>
+    <div id="result-banner"></div>
+    <div class="rows">
+      <div class="row">
+        <span class="row-k">Status</span>
+        <span class="row-v" id="r-status">—</span>
+      </div>
+      <div class="row">
+        <span class="row-k">Reason</span>
+        <span class="row-v" id="r-reason">—</span>
+      </div>
+      <div class="row">
+        <span class="row-k">Ban time</span>
+        <span class="row-v" id="r-bantime">—</span>
+      </div>
+      <div class="row">
+        <span class="row-k">Appeal time</span>
+        <span class="row-v" id="r-appealtime">—</span>
+      </div>
+    </div>
+    <div class="hint">100% free, forever. No signup required.</div>
+    <button id="again-btn" class="btn btn-mt">Check another number</button>
+  </div>
+
+</div>
+
+<footer>
+  &copy; 2026 The Satanic Mirror
+  <span class="sep">·</span>
+  <a href="https://t.me/wegschleifen" target="_blank" rel="noreferrer">Telegram</a>
+</footer>
+
+<script>
+  // Turnstile: skip locally, load the widget script in prod.
+  if (['localhost', '127.0.0.1'].includes(location.hostname)) {
+    document.querySelectorAll('.cf-turnstile, #ts-wrap').forEach(el => el.remove());
+  }
+</script>
+<script>if (!['localhost','127.0.0.1'].includes(location.hostname)) { document.write('<scr'+'ipt src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer><\/scr'+'ipt>'); }</script>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
+
+  function normalize(num) {
+    if (!num) return null;
+    num = num.trim().replace(/[^\d+]/g, '').replace(/\+/g, '');
+    if (!num) return null;
+    if (num.startsWith('0')) num = '49' + num.slice(1);
+    return '+' + num;
+  }
+  function isValid(num) {
+    const n = normalize(num);
+    return !!n && /^\+\d{7,}$/.test(n);
+  }
+  function showError(msg) {
+    const el = $('check-error');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+  }
+  function clearError() { $('check-error').classList.add('hidden'); }
+
+  async function getToken() {
+    let tk = document.querySelector('meta[name="page-token"]')?.content || '';
+    if (!tk) {
+      try { tk = (await fetch('/api/get-token').then(r => r.json())).token || ''; } catch {}
+    }
+    return tk;
+  }
+
+  // unix seconds -> readable local date+time, or em dash when missing.
+  function fmtTs(unix) { return unix ? new Date(unix * 1000).toLocaleString() : '—'; }
+
+  function render(number, d) {
+    const banned = !!d.banned;
+    const modBan = !!d.mod_ban;
+    const reason = d.violation_label || d.violation_reason || d.reason || '';
+
+    // lucide "ban" / "circle-check", matching the panel's icon set.
+    const svg = (paths) =>
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" ' +
+      'stroke-linecap="round" stroke-linejoin="round">' + paths + '</svg>';
+    const ICON_BAN = svg('<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>');
+    const ICON_OK = svg('<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>');
+
+    const banner = $('result-banner');
+    if (banned || modBan) {
+      banner.className = 'status-banner banned';
+      banner.innerHTML =
+        '<div class="s-icon banned">' + ICON_BAN + '</div>' +
+        '<div><div class="s-title">' + number + '</div>' +
+        '<div class="s-sub">This number is banned from WhatsApp.</div></div>';
+    } else {
+      banner.className = 'status-banner active';
+      banner.innerHTML =
+        '<div class="s-icon active">' + ICON_OK + '</div>' +
+        '<div><div class="s-title">' + number + '</div>' +
+        '<div class="s-sub">This number is not banned.</div></div>';
+    }
+
+    const st = $('r-status');
+    st.textContent = (banned || modBan) ? 'Banned' : 'Not banned';
+    st.className = 'row-v ' + ((banned || modBan) ? 'banned' : 'active');
+    $('r-reason').textContent = (banned || modBan) ? (reason || 'Not specified') : '—';
+    // Ban time / appeal time are always shown as rows; filled once the
+    // appeal-status lookup returns (only available for banned numbers).
+    $('r-bantime').textContent = '—';
+    $('r-appealtime').textContent = '—';
+
+    $('step-input').classList.add('hidden');
+    $('step-result').classList.remove('hidden');
+
+    if (banned || modBan) fetchTimes(number);
+  }
+
+  // Pulls ban_time + appeal_creation_time from the appeal-status endpoint.
+  // The appeal token was just stored server-side by /check-numberr2, so this
+  // only works right after a positive check. Failures leave the rows as "—".
+  async function fetchTimes(number) {
+    $('r-bantime').innerHTML = '<span class="spin"></span>';
+    $('r-appealtime').innerHTML = '<span class="spin"></span>';
+    try {
+      const tk = await getToken();
+      const res = await fetch('/api/appeal/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Page-Token': tk },
+        body: JSON.stringify({ phone: number }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) { $('r-bantime').textContent = '—'; $('r-appealtime').textContent = '—'; return; }
+      $('r-bantime').textContent = fmtTs(d.ban_time);
+      $('r-appealtime').textContent = fmtTs(d.appeal_creation_time);
+    } catch {
+      $('r-bantime').textContent = '—';
+      $('r-appealtime').textContent = '—';
+    }
+  }
+
+  async function check() {
+    clearError();
+    let number = $('phone-input').value.trim();
+    if (!number) { showError('Please enter a phone number.'); return; }
+    if (!isValid(number)) { showError('Please enter a valid number, e.g. +49123456789 or 0123456789.'); return; }
+    number = normalize(number);
+
+    const ct = isLocal ? '' : (document.querySelector('input[name="cf-turnstile-response"]')?.value || '');
+    if (!isLocal && !ct) { showError('Please complete the captcha first.'); return; }
+
+    const btn = $('check-btn');
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span> Checking...';
+
+    try {
+      const tk = await getToken();
+      const res = await fetch('/check-numberr2', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'X-Page-Token': tk,
+        },
+        body: JSON.stringify({ number: number, 'cf-turnstile-response': ct }),
+      });
+      const text = await res.text();
+      let d;
+      try { d = JSON.parse(text); } catch { showError('Server error ' + res.status); return; }
+      if (!res.ok) { showError(d?.error || ('Error ' + res.status)); return; }
+      render(number, d);
+    } catch (err) {
+      showError('Network error: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = original;
+      if (window.turnstile) window.turnstile.reset();
+    }
+  }
+
+  $('check-btn').addEventListener('click', check);
+  $('phone-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') check(); });
+  $('again-btn').addEventListener('click', () => {
+    $('step-result').classList.add('hidden');
+    $('step-input').classList.remove('hidden');
+    $('phone-input').value = '';
+    $('phone-input').focus();
+  });
+})();
+</script>
+
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4526777ed252fff',t:'MTc5MTA5ODIxOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "v-ban-checker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "V-BAN-CHECKER — Telegram WhatsApp ban checker bot powered by baron0.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "start": "node src/index.mjs",
+    "dev": "node --watch src/index.mjs",
+    "test": "node --test",
+    "check": "node --check src/index.mjs && node --check src/ban-checker.mjs && node --check src/config.mjs && node --check src/format.mjs"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.5",
+    "grammy": "^1.46.0",
+    "pino": "^10.4.0"
+  }
+}
