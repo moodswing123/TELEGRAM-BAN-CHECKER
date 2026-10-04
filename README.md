@@ -56,3 +56,6 @@ Baron0 may reject server-side automated requests with `403 Access denied` when a
 ## Deployment
 
 Run this as an always-on Node worker, not a short-lived serverless function. Keep `.env` private and use a process manager such as systemd, PM2, Docker, or a managed worker. Never paste the Telegram token into source control or chat.
+
+# Main file is 
+ <strong> Main file is in src/index mjs</>
