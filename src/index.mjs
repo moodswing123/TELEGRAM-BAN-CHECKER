@@ -53,7 +53,8 @@ async function animatedReply(ctx, phone) {
     const result = await checkBan(phone, config);
     if (config.richMessagesEnabled) {
       try {
-        await ctx.api.callApi('sendRichMessage', richReportPayload(ctx.chat.id, result, config.botName, config.watermark));
+        const richPayload = richReportPayload(ctx.chat.id, result, config.botName, config.watermark);
+        await ctx.api.sendRichMessage(richPayload.chat_id, richPayload.rich_message);
         await ctx.api.deleteMessage(ctx.chat.id, message.message_id).catch(() => {});
         return;
       } catch (richError) {
