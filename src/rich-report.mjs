@@ -1,41 +1,63 @@
 import { formatTimestamp } from './ban-checker.mjs';
 
 const upper = (value) => String(value ?? '—').toUpperCase();
-const bold = (text) => ({ type: 'bold', text: upper(text) });
+const title = (value) => String(value ?? '—');
+const bold = (text) => ({ type: 'bold', text });
 const code = (text) => ({ type: 'code', text: String(text ?? '—') });
 const dateText = (value, fallback) => {
-  if (!value) return upper(fallback);
+  if (!value) return title(fallback);
   const unix = typeof value === 'number' ? value : Math.floor(new Date(value).getTime() / 1000);
-  if (!Number.isFinite(unix)) return upper(formatTimestamp(value));
-  return { type: 'date_time', text: upper(formatTimestamp(value).replace(/ UTC$/, '')), unix_time: unix, date_time_format: 'DT' };
+  if (!Number.isFinite(unix)) return title(formatTimestamp(value));
+  return { type: 'date_time', text: formatTimestamp(value).replace(/ UTC$/, ''), unix_time: unix, date_time_format: 'DT' };
 };
-const cell = (text, options = {}) => ({ text, align: options.align || 'left', valign: 'middle', ...(options.header ? { is_header: true } : {}) });
-const labelCell = (emoji, label) => [emoji, ' ', bold(label)];
+const cell = (text, options = {}) => ({
+  text,
+  align: options.align || 'left',
+  valign: 'middle',
+  ...(options.header ? { is_header: true } : {}),
+});
+const labelCell = (emoji, label) => [emoji, ' ', title(label)];
 
 export function buildRichReport(result, botName, watermark) {
-  const missing = result.banned ? 'NOT PROVIDED' : 'NOT APPLICABLE';
+  const missing = result.banned ? 'Not provided' : 'Not applicable';
   const rows = [
-    [cell(labelCell('☎️', 'PHONE NUMBER')), cell(code(result.phone))],
-    [cell(labelCell('☎️', 'PHONE COUNTRY')), cell(upper(result.phoneCountry))],
-    [cell(labelCell(result.banned ? '🔴' : '🟢', 'BAN STATUS')), cell(bold(result.banned ? 'BANNED' : 'NOT BANNED'))],
-    [cell(labelCell('📌', 'BAN TYPE')), cell(bold(result.banType))],
-    [cell(labelCell('📅', 'BAN DATE')), cell(dateText(result.banDate, missing))],
-    [cell(labelCell('🌀', 'BAN TIME')), cell(dateText(result.banTime, missing))],
-    [cell(labelCell('⚠️', 'VIOLATION TYPE')), cell(bold(result.violationType))],
-    [cell(labelCell('📝', 'VIOLATION REASON')), cell(bold(result.banned ? result.reason : missing))],
-    [cell(labelCell('✉️', 'CAN APPEAL')), cell(bold(result.canAppeal))],
-    [cell(labelCell('✉️', 'APPEAL STATUS')), cell(bold(result.appealStatus))],
-    [cell(labelCell('📅', 'APPEAL CREATED')), cell(dateText(result.appealTime, missing))],
+    [cell(labelCell('☎️', 'Phone Number')), cell(code(result.phone))],
+    [cell(labelCell('☎️', 'Phone Country')), cell(title(result.phoneCountry))],
+    [cell(labelCell(result.banned ? '🔴' : '🟢', 'Ban Status')), cell(title(result.banned ? 'BANNED' : 'NOT BANNED'))],
+    [cell(labelCell('📌', 'Ban Type')), cell(title(result.banType))],
+    [cell(labelCell('📅', 'Ban Date')), cell(dateText(result.banDate, missing))],
+    [cell(labelCell('🌀', 'Ban Time')), cell(dateText(result.banTime, missing))],
+    [cell(labelCell('⚠️', 'Violation Type')), cell(title(result.violationType))],
+    [cell(labelCell('📝', 'Violation Reason')), cell(title(result.banned ? result.reason : missing))],
+    [cell(labelCell('✉️', 'Can Appeal')), cell(title(result.canAppeal))],
+    [cell(labelCell('✉️', 'Appeal Status')), cell(title(result.appealStatus))],
+    [cell(labelCell('📅', 'Appeal Created')), cell(dateText(result.appealTime, missing))],
   ];
+  const retryData = `rich_retry:${result.phone}`.slice(0, 64);
   return {
     blocks: [
-      { type: 'heading', size: 3, text: [bold(`🔹 ${botName} 🔹`)] },
-      { type: 'paragraph', text: [bold(`${result.banned ? '🚫' : '🟢'} WHATSAPP BAN ANALYSIS`)] },
+      {
+        type: 'blockquote',
+        blocks: [{
+          type: 'paragraph',
+          text: [bold('⚔ Retired Dev • Victory ⚔ 〔♧〕'), '\n', `? ${result.phone}`],
+        }],
+      },
+      { type: 'heading', size: 2, text: [bold(`✅ ${botName}`)] },
+      { type: 'paragraph', text: [bold(`${result.banned ? '🚫' : '🟢'} WhatsApp Ban Analysis`)] },
       { type: 'table', is_bordered: true, is_striped: true, is_compact: true, cells: [
-        [cell(bold('FIELD'), { header: true, align: 'center' }), cell(bold('VALUE'), { header: true, align: 'center' })],
+        [cell(bold('Field'), { header: true, align: 'center' }), cell(bold('Value'), { header: true, align: 'center' })],
         ...rows,
       ] },
-      { type: 'footer', text: [bold(`✅ ${botName}`), '\n', upper(watermark)] },
+      { type: 'footer', text: [bold(`✅ ${botName}`), '\n', watermark] },
+      {
+        type: 'buttons',
+        align: 'center',
+        buttons: [
+          { text: '🚀 Try', style: 'success', callback_data: 'rich_try' },
+          { text: '↻ Retry Check', style: 'danger', callback_data: retryData },
+        ],
+      },
     ],
   };
 }

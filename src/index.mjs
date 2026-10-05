@@ -84,7 +84,15 @@ bot.callbackQuery('verify_join', async (ctx) => {
     await ctx.reply(joinPrompt(config.botName, config.watermark), { parse_mode: 'HTML', reply_markup: forceJoinKeyboard(config.forceJoin) });
   }
 });
-
+bot.callbackQuery('rich_try', async (ctx) => {
+  await ctx.answerCallbackQuery();
+  await ctx.reply('Send a WhatsApp number like <code>?+2348131225323</code>.', { parse_mode: 'HTML' });
+});
+bot.callbackQuery(/^rich_retry:(.+)$/, async (ctx) => {
+  await ctx.answerCallbackQuery({ text: 'Retrying ban check…' });
+  const phone = normalizePhone(ctx.match[1]);
+  if (isValidPhone(phone)) await animatedReply(ctx, phone);
+});
 bot.on('message', async (ctx, next) => {
   const message = ctx.message;
   if (message.forward_origin || message.forward_from || message.forward_from_chat) {

@@ -10,15 +10,18 @@ test('builds a structured rich report with a bordered table', () => {
     appealStatus: 'BANNED', appealTime: 1759005389,
   };
   const rich = buildRichReport(result, 'V-BAN-CHECKER', 'Powered by Victory Tech™');
-  assert.equal(rich.blocks[0].type, 'heading');
-  assert.equal(rich.blocks[2].type, 'table');
-  assert.equal(rich.blocks[2].is_bordered, true);
-  assert.equal(rich.blocks[2].is_striped, true);
-  assert.equal(rich.blocks[2].cells.length, 12);
-  assert.equal(rich.blocks[2].cells[0][0].is_header, true);
-  assert.equal(rich.blocks[2].cells.slice(1).flat().every((cell) => cell && typeof cell === 'object' && !Array.isArray(cell)), true);
-  assert.equal(rich.blocks[2].cells[1][1].text.type, 'code');
-  assert.equal(rich.blocks[2].cells[5][1].text.type, 'date_time');
+  assert.equal(rich.blocks[0].type, 'blockquote');
+  assert.equal(rich.blocks[1].type, 'heading');
+  assert.equal(rich.blocks[3].type, 'table');
+  assert.equal(rich.blocks[3].is_bordered, true);
+  assert.equal(rich.blocks[3].is_striped, true);
+  assert.equal(rich.blocks[3].cells.length, 12);
+  assert.equal(rich.blocks[3].cells[0][0].is_header, true);
+  assert.equal(rich.blocks[3].cells.slice(1).flat().every((cell) => cell && typeof cell === 'object' && !Array.isArray(cell)), true);
+  assert.equal(rich.blocks[3].cells[1][1].text.type, 'code');
+  assert.equal(rich.blocks[3].cells[5][1].text.type, 'date_time');
+  assert.equal(rich.blocks[5].type, 'buttons');
+  assert.equal(rich.blocks[5].buttons.length, 2);
 });
 
 test('wraps the report in a sendRichMessage payload', () => {
