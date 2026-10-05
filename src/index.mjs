@@ -3,6 +3,7 @@ import pino from 'pino';
 import { loadConfig } from './config.mjs';
 import { checkBan, isValidPhone, normalizePhone, sleep } from './ban-checker.mjs';
 import { forceJoinKeyboard, joinPrompt, resultText, typingFrames, welcomeText } from './format.mjs';
+import { richReportPayload } from './rich-report.mjs';
 
 const config = loadConfig();
 const log = pino({ level: process.env.LOG_LEVEL || 'info' });
@@ -50,6 +51,15 @@ async function animatedReply(ctx, phone) {
   }
   try {
     const result = await checkBan(phone, config);
+    if (config.richMessagesEnabled) {
+      try {
+        await ctx.api.callApi('sendRichMessage', richReportPayload(ctx.chat.id, result, config.botName, config.watermark));
+        await ctx.api.deleteMessage(ctx.chat.id, message.message_id).catch(() => {});
+        return;
+      } catch (richError) {
+        log.warn({ err: richError.message }, 'Rich Message API unavailable; using HTML fallback');
+      }
+    }
     await ctx.api.editMessageText(ctx.chat.id, message.message_id, resultText(result, config.botName, config.watermark), { parse_mode: 'HTML' });
   } catch (error) {
     const explanation = error.code === 'ACCESS_DENIED'

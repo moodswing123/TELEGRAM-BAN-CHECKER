@@ -6,6 +6,7 @@ A Telegram bot for checking WhatsApp ban status through baron0’s public free-c
 
 - `?`, `/`, or `.` directly followed by an international WhatsApp number.
 - Progressive “typing” experience: Telegram typing action plus edited analysis frames.
+- Telegram Rich Message mode: structured headings, bordered/striped tables, bold text, and date-time entities, with an automatic HTML fallback if the Bot API or client does not support Rich Messages.
 - Force join gates for one channel and two groups.
 - Dark, field/value ban-analysis report modeled on the supplied reference image.
 - No secrets committed: credentials live in `.env`.
@@ -31,6 +32,8 @@ npm start
 - The three `*_URL` values are the URLs opened by the inline buttons.
 
 The bot must be an administrator in the force-join channel/groups if Telegram requires it for membership checks.
+
+`RICH_MESSAGES_ENABLED=true` enables the Bot API `sendRichMessage` method. Set it to `false` to use the compatible HTML `<blockquote>`/`<pre>` report instead.
 
 ## Baron0 integration
 

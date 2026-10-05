@@ -26,6 +26,7 @@ export function loadConfig({ requireToken = true } = {}) {
     baronApiUrl: optional('BAN_CHECKER_API_URL', optional('BARON_API_URL', '')),
     baronApiKey: optional('BARON_API_KEY', ''),
     baronTimeoutMs: Number(optional('BARON_TIMEOUT_MS', '20000')),
+    richMessagesEnabled: optional('RICH_MESSAGES_ENABLED', 'true').toLowerCase() !== 'false',
     prefixes: ['?', '/', '.'],
     forceJoin,
     ownerIds: optional('OWNER_IDS', '').split(',').map((id) => id.trim()).filter(Boolean),
