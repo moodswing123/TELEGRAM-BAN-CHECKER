@@ -16,6 +16,7 @@ test('builds a structured rich report with a bordered table', () => {
   assert.equal(rich.blocks[2].is_striped, true);
   assert.equal(rich.blocks[2].cells.length, 12);
   assert.equal(rich.blocks[2].cells[0][0].is_header, true);
+  assert.equal(rich.blocks[2].cells.slice(1).flat().every((cell) => cell && typeof cell === 'object' && !Array.isArray(cell)), true);
   assert.equal(rich.blocks[2].cells[1][1].text.type, 'code');
   assert.equal(rich.blocks[2].cells[5][1].text.type, 'date_time');
 });

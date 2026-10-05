@@ -15,17 +15,17 @@ const labelCell = (emoji, label) => [emoji, ' ', bold(label)];
 export function buildRichReport(result, botName, watermark) {
   const missing = result.banned ? 'NOT PROVIDED' : 'NOT APPLICABLE';
   const rows = [
-    [labelCell('☎️', 'PHONE NUMBER'), cell(code(result.phone))],
-    [labelCell('☎️', 'PHONE COUNTRY'), cell(upper(result.phoneCountry))],
-    [labelCell(result.banned ? '🔴' : '🟢', 'BAN STATUS'), cell(bold(result.banned ? 'BANNED' : 'NOT BANNED'))],
-    [labelCell('📌', 'BAN TYPE'), cell(bold(result.banType))],
-    [labelCell('📅', 'BAN DATE'), cell(dateText(result.banDate, missing))],
-    [labelCell('🌀', 'BAN TIME'), cell(dateText(result.banTime, missing))],
-    [labelCell('⚠️', 'VIOLATION TYPE'), cell(bold(result.violationType))],
-    [labelCell('📝', 'VIOLATION REASON'), cell(bold(result.banned ? result.reason : missing))],
-    [labelCell('✉️', 'CAN APPEAL'), cell(bold(result.canAppeal))],
-    [labelCell('✉️', 'APPEAL STATUS'), cell(bold(result.appealStatus))],
-    [labelCell('📅', 'APPEAL CREATED'), cell(dateText(result.appealTime, missing))],
+    [cell(labelCell('☎️', 'PHONE NUMBER')), cell(code(result.phone))],
+    [cell(labelCell('☎️', 'PHONE COUNTRY')), cell(upper(result.phoneCountry))],
+    [cell(labelCell(result.banned ? '🔴' : '🟢', 'BAN STATUS')), cell(bold(result.banned ? 'BANNED' : 'NOT BANNED'))],
+    [cell(labelCell('📌', 'BAN TYPE')), cell(bold(result.banType))],
+    [cell(labelCell('📅', 'BAN DATE')), cell(dateText(result.banDate, missing))],
+    [cell(labelCell('🌀', 'BAN TIME')), cell(dateText(result.banTime, missing))],
+    [cell(labelCell('⚠️', 'VIOLATION TYPE')), cell(bold(result.violationType))],
+    [cell(labelCell('📝', 'VIOLATION REASON')), cell(bold(result.banned ? result.reason : missing))],
+    [cell(labelCell('✉️', 'CAN APPEAL')), cell(bold(result.canAppeal))],
+    [cell(labelCell('✉️', 'APPEAL STATUS')), cell(bold(result.appealStatus))],
+    [cell(labelCell('📅', 'APPEAL CREATED')), cell(dateText(result.appealTime, missing))],
   ];
   return {
     blocks: [
